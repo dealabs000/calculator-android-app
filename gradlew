@@ -121,8 +121,12 @@ if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
       max*)
         MAX_FD=$( expr $MAX_FD : 'max\(.*\)' ) ;;
     esac
-    [ "$MAX_FD" = maximum ] && MAX_FD=65535
-    ulimit -n $MAX_FD || die "Could not set maximum file descriptor limit: $MAX_FD"
+    if [ "$MAX_FD" = maximum ] ; then
+        MAX_FD=65535
+    fi
+    if [ -n "$MAX_FD" ] && [ "$MAX_FD" -gt 0 ] ; then
+        ulimit -n $MAX_FD || warn "Could not set maximum file descriptor limit: $MAX_FD"
+    fi
 fi
 
 # Escape application args
