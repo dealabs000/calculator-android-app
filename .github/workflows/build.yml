@@ -19,10 +19,28 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: '8.5'
+    # This creates the wrapper if it doesn't exist
+    - name: Create Gradle wrapper
+      run: |
+        # Download Gradle
+        wget https://services.gradle.org/distributions/gradle-8.5-bin.zip
+        unzip -q gradle-8.5-bin.zip
+        
+        # Create wrapper
+        ./gradle-8.5/bin/gradle wrapper --gradle-version 8.5
+        
+        # Make executable
+        chmod +x gradlew
+        
+        # Verify files exist
+        ls -la gradlew
+        ls -la gradle/wrapper/
     
     - name: Build with Gradle
       run: ./gradlew build
+    
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/*.apk
